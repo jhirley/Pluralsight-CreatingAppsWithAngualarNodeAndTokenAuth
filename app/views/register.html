@@ -1,4 +1,4 @@
-	<form name="register" class="form-signin" novalidate>
+	<form name="register" ng-submit="submit()" class="form-signin" novalidate>
 		<h1 class="form-signin-heading text-muted">Register</h1>
 		<input ng-model="email" name="email" type="email" class="form-control" placeholder="Email address" required="" autofocus="">
 		<p class="help-block" ng-show="register.email.$dirty && register.email.$invalid">Please use a valid email</p>
