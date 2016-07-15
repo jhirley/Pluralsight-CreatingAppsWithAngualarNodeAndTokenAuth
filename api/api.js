@@ -3,7 +3,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-var User = require('./models/User.js')
+var User = require('./models/User.js');
 
 var app = express();
 
@@ -64,7 +64,7 @@ app.post('/register', function(req, res){
 	});
 
 	newUser.save(function(err) {
-		res.status(200).json(newUser);;
+		res.status(200).send(newUser.toJSON());
 	});
 });
 

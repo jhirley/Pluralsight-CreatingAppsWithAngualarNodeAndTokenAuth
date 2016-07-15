@@ -6,7 +6,14 @@ var bcrypt = require('bcrypt');
 var UserSchema = new mongoose.Schema({
 	email: String,
 	password: String
-})
+});
+
+UserSchema.methods.toJSON = function() {
+	var user = this.toObject();
+	delete user.password;
+	console.log(user);
+	return user;
+};
 
 exports.model = mongoose.model('User', UserSchema, 'User_0_0_1');
 
@@ -24,7 +31,6 @@ UserSchema.pre('save',  function(next) {
 				user.password = hash;
 				next();
 			}
-
 		})
 	})
 })
