@@ -13,7 +13,8 @@ angular.module('code1App')
 
     	var url = 'http://localhost:3000/register';
     	var user = {
-            name:'Jhirley'
+            email: $scope.email,
+            password: $scope.password
         };
     	
     	$http.post(url, user)
