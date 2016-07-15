@@ -3,6 +3,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+var User = require('./models/User.js')
 
 var app = express();
 
@@ -51,17 +52,13 @@ process.on('SIGINT', function() {
   }); 
 }); 
 
-//jf mongoose models
-var User = mongoose.model('User', {
-	email: String,
-	password: String
-}, 'User_0_0_1');
+
 
 //jf routes
 app.post('/register', function(req, res){
 	var user = req.body;
 
-	var newUser = new User({
+	var newUser = new User.model({
 		email: user.email,
 		password: user.password
 	});
