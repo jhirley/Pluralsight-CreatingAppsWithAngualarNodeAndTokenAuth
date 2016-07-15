@@ -8,8 +8,18 @@
  * Controller of the code1App
  */
 angular.module('code1App')
-  .controller('RegisterCtrl', function ($scope) {
+  .controller('RegisterCtrl', function ($scope, $http, $rootScope, alert) {
     $scope.submit = function() {
-    	console.log("test message from RegisterCtrl");
+
+    	var url = '/';
+    	var user = {};
+    	
+    	$http.post(url, user)
+    		.success(function(res){
+    			alert('success','Ok!!' ,'You are now registered!', 2000);
+    		})
+    		.error(function(err){
+    			alert('warning','Opps!' ,'Could not register!', 2000);
+    		});
     };
   });
