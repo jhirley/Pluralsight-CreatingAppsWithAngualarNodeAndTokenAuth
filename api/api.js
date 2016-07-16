@@ -4,6 +4,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var User = require('./models/User.js');
+var jwt = require('./services/jwt.js');
 
 var app = express();
 
@@ -67,6 +68,8 @@ app.post('/register', function(req, res){
 		res.status(200).send(newUser.toJSON());
 	});
 });
+
+// console.log(jwt.encode('hi', 'secret'));
 
 //jf server
 var server = app.listen(3000, function(){
