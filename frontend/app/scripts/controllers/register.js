@@ -19,11 +19,11 @@ angular.module('code1App')
     	
     	$http.post(url, user)
     		.success(function(res){
-    			alert('success','Ok!!' ,'You are now registered!', 2000);
+    			alert('success','Account Created!!' ,' Welcome, ' + res.user.email + '!', 2000);
                 authToken.setToken(res.token);
     		})
     		.error(function(err){
-    			alert('warning','Opps!' ,'Could not register!', 2000);
+    			alert('warning','Opps!' ,' Could not register!', 2000);
     		});
     };
 });
