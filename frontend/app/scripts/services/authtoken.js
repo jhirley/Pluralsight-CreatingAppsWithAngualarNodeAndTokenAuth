@@ -8,16 +8,29 @@
  * Factory in the code1App.
  */
 angular.module('code1App')
-  .factory('authToken', function () {
+  .factory('authToken', function ($window) {
     // Service logic
     // ...
 
-    var meaningOfLife = 42;
+    var storage = $window.localStorage;
+    var cachedToken;
 
     // Public API here
     return {
-      someMethod: function () {
-        return meaningOfLife;
+      setToken: function(token) {
+        cachedToken = token;
+        storage.setItem('userToken',token);
+
+      },
+      getToken: function() {
+        if(!cachedToken) 
+          {cachedToken = storage.getItem('userToken');}
+
+        return cachedToken;
+      },
+      isAuthenticated: function() {
+        return !! getToken();
+
       }
     };
-  });
+});

@@ -67,9 +67,9 @@ app.post('/register', function(req, res){
 	var payload = {
 		iss: req.hostname,
 		sub: user._id
-	}
+	};
 
-	var token = jwt.encode(payload, "shhh..");
+	var token = jwt.encode(payload, 'shhh..');
 
 	newUser.save(function(err) {
 		res.status(200).send({

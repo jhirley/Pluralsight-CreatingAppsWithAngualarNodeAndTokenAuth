@@ -8,7 +8,7 @@
  * Controller of the code1App
  */
 angular.module('code1App')
-  .controller('RegisterCtrl', function ($scope, $http, $rootScope, alert) {
+  .controller('RegisterCtrl', function ($scope, $http, $rootScope, alert, authToken) {
     $scope.submit = function() {
 
     	var url = 'http://localhost:3000/register';
@@ -20,9 +20,10 @@ angular.module('code1App')
     	$http.post(url, user)
     		.success(function(res){
     			alert('success','Ok!!' ,'You are now registered!', 2000);
+                authToken.setToken(res.token);
     		})
     		.error(function(err){
     			alert('warning','Opps!' ,'Could not register!', 2000);
     		});
     };
-  });
+});
