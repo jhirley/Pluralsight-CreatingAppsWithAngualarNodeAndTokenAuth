@@ -4,7 +4,8 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var User = require('./models/User.js');
-var jwt = require('./services/jwt.js');
+var jwt = require('jwt-simple');  // jwt-simple npm libary
+// var jwt = require('./services/jwt.js');  //jf created jwt.js
 
 var app = express();
 
@@ -66,7 +67,7 @@ app.post('/register', function(req, res){
 
 	var payload = {
 		iss: req.hostname,
-		sub: user._id
+		sub: newUser.id
 	};
 
 	var token = jwt.encode(payload, 'shhh..');
@@ -77,6 +78,35 @@ app.post('/register', function(req, res){
 			token: token
 		});
 	});
+});
+
+var jobs = [
+	'Cook'
+	,'SuperHero'
+	,'Unicorn Wisperer'
+	,'Toast Inspector'
+];
+app.get('/jobs', function(req, res) {
+
+	if(!req.headers.authorization) {
+		return res.status(401).send({
+			message: 'You are not authorized !'
+		});
+	}
+
+	//jf console.log(req.headers);
+
+	var token = req.headers.authorization.split(' ')[1];
+	//jf console.log('Token being passed by API is ' + token);
+	var payload = jwt.decode(token, 'shhh..');
+
+	if (!payload.sub) {
+		res.status(401).send({
+			message: 'You are not authorized !'
+		});
+	}
+
+	res.json(jobs);
 });
 
 // console.log(jwt.encode('hi', 'secret'));

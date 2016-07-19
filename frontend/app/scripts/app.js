@@ -9,4 +9,4 @@
  * Main module of the application.
  */
 angular
-  .module('code1App', ['ui.router']);
+  .module('code1App', ['ui.router', 'ngAnimate']);

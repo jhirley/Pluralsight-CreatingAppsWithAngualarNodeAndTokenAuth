@@ -3,7 +3,7 @@
 'use strict';
 
 angular
-  .module('code1App').config(function($urlRouterProvider, $stateProvider){
+  .module('code1App').config(function($urlRouterProvider, $stateProvider, $httpProvider){
 
   	$urlRouterProvider.otherwise('/');
 
@@ -16,5 +16,17 @@ angular
   		url: '/register',
   		templateUrl: '/views/register.html',
   		controller:'RegisterCtrl'
-  	});
-  });
+  	})
+    .state('jobs', {
+      url: '/jobs',
+      templateUrl: '/views/jobs.html',
+      controller:'JobsCtrl'
+    })
+    .state('logout', {
+      url: '/logout',
+      controller:'LogoutCtrl'
+    });
+
+    $httpProvider.interceptors.push('authInterceptor');
+  })
+  .constant('API_URL','http://localhost:3000/');
