@@ -6,11 +6,18 @@ var mongoose = require('mongoose');
 var User = require('./models/User.js');
 var jwt = require('jwt-simple');  // jwt-simple npm libary
 // var jwt = require('./services/jwt.js');  //jf created jwt.js
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
 
 var app = express();
 
 //jf middleware 
 app.use(bodyParser.json());
+
+app.use(passport.initialize());
+passport.serializeUser(function(user, done) {
+	done(null, user.id);
+});
 
 app.use(function(req,res,next) {	//jf this middleware disables CORS
 	res.header('Access-Control-Allow-Origin', '*');
@@ -19,7 +26,28 @@ app.use(function(req,res,next) {	//jf this middleware disables CORS
 	next();
 });
 
+var strategy = new LocalStrategy({usernameField:'email'}, function(email, password, done){
+	User.findOne({email: email}, function( err, user){
+	if(err) {return done(err);}	
 
+	if(!user)
+		{return done(null, false, {message: 'Wrong email/password'});
+
+	}
+
+	user.comparePasswords(password, function(err, isMatch)
+		{
+			if(err) {return done(err);}	
+
+			if(!isMatch) {
+				return done(null, false, {message: 'Wrong email/password'});	
+			}	
+			return done( null, user);	
+		});
+	});
+});
+
+passport.use(strategy);
 
 //jf mongodb
 
@@ -72,27 +100,16 @@ app.post('/register', function(req, res){
 	});
 });
 
-app.post('/login', function(req, res){
-	req.user = req.body;
+app.post('/login', function(req, res, next){
+	passport.authenticate('local', function(err, user){
+		if (err) {next(err);}
 
-	User.findOne({email: req.user.email}, function( err, user){
-		if(err) {throw err;}
+		req.login(user, function(err){
+			if (err) {next(err);}
 
-		if(!user)
-			{res.status(401).send({message: 'Wrong email/password'});
-
-		}
-
-		user.comparePasswords(req.user.password, function(err, isMatch)
-		{
-			if(err) {throw err;}	
-
-			if(!isMatch) {
-				return res.status(401).send({message: 'Wrong email/password'});	
-			}	
-			createSendToken (user, res);	
+			createSendToken(user, res);
 		});
-	});
+	})(req,res,next);
 });
 
 var jobs = [

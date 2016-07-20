@@ -8,22 +8,15 @@
  * Controller of the code1App
  */
 angular.module('code1App')
-  .controller('RegisterCtrl', function ($scope, $http, $rootScope, alert, authToken, API_URL) {
+  .controller('RegisterCtrl', function ($scope, $http, alert, auth) {
     $scope.submit = function() {
 
-    	var url = API_URL + 'register';
-    	var user = {
-            email: $scope.email,
-            password: $scope.password
-        };
-    	
-    	$http.post(url, user)
-    		.success(function(res){
-    			alert('success','Account Created!!' ,' Welcome, ' + res.user.email + '!', 2000);
-                authToken.setToken(res.token);
-    		})
-    		.error(function(err){
-    			alert('warning','Opps!' ,' Could not register!', 2000);
-    		});
+	auth.register($scope.email, $scope.password)
+		.success(function(res){
+			alert('success','Account Created!!' ,' Welcome, ' + res.user.email + '!', 2000);
+		})
+		.error(function(err){
+			alert('warning','Opps!' ,' Could not register!', 2000);
+		});
     };
 });
