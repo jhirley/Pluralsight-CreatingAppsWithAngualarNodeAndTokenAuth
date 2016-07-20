@@ -25,6 +25,11 @@ angular
     .state('logout', {
       url: '/logout',
       controller:'LogoutCtrl'
+    })
+    .state('login', {
+      url: '/login',
+      templateUrl: '/views/login.html',
+      controller:'LoginCtrl'
     });
 
     $httpProvider.interceptors.push('authInterceptor');

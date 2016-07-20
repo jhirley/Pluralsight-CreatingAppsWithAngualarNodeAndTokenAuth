@@ -8,10 +8,10 @@
  * Controller of the code1App
  */
 angular.module('code1App')
-  .controller('RegisterCtrl', function ($scope, $http, $rootScope, alert, authToken) {
+  .controller('RegisterCtrl', function ($scope, $http, $rootScope, alert, authToken, API_URL) {
     $scope.submit = function() {
 
-    	var url = 'http://localhost:3000/register';
+    	var url = API_URL + 'register';
     	var user = {
             email: $scope.email,
             password: $scope.password

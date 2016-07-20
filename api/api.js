@@ -60,22 +60,37 @@ process.on('SIGINT', function() {
 app.post('/register', function(req, res){
 	var user = req.body;
 
-	var newUser = new User.model({
+	var newUser = new User({
 		email: user.email,
 		password: user.password
 	});
 
-	var payload = {
-		iss: req.hostname,
-		sub: newUser.id
-	};
-
-	var token = jwt.encode(payload, 'shhh..');
+	
 
 	newUser.save(function(err) {
-		res.status(200).send({
-			user: newUser.toJSON(),
-			token: token
+		createSendToken (newUser, res);
+	});
+});
+
+app.post('/login', function(req, res){
+	req.user = req.body;
+
+	User.findOne({email: req.user.email}, function( err, user){
+		if(err) {throw err;}
+
+		if(!user)
+			{res.status(401).send({message: 'Wrong email/password'});
+
+		}
+
+		user.comparePasswords(req.user.password, function(err, isMatch)
+		{
+			if(err) {throw err;}	
+
+			if(!isMatch) {
+				return res.status(401).send({message: 'Wrong email/password'});	
+			}	
+			createSendToken (user, res);	
 		});
 	});
 });
@@ -108,6 +123,21 @@ app.get('/jobs', function(req, res) {
 
 	res.json(jobs);
 });
+
+//
+function createSendToken(user, res) {
+	var payload = {
+		// iss: req.hostname,  //removed in lesson, Login, Login endpoint 5:48
+		sub: user.id
+	};
+
+	var token = jwt.encode(payload, 'shhh..');
+
+	res.status(200).send({
+		user: user.toJSON(),
+		token: token
+	});
+}
 
 // console.log(jwt.encode('hi', 'secret'));
 
