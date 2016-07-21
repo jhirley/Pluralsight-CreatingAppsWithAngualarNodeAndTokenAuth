@@ -26,7 +26,12 @@ app.use(function(req,res,next) {	//jf this middleware disables CORS
 	next();
 });
 
-var strategy = new LocalStrategy({usernameField:'email'}, function(email, password, done){
+var strategyOptions = {
+	usernameField: 'email'
+};
+
+var logInStrategy = new LocalStrategy(strategyOptions, function(email, password, done){
+	
 	User.findOne({email: email}, function( err, user){
 	if(err) {return done(err);}	
 
@@ -47,7 +52,29 @@ var strategy = new LocalStrategy({usernameField:'email'}, function(email, passwo
 	});
 });
 
-passport.use(strategy);
+var registerStrategy = new LocalStrategy(strategyOptions, function(email, password, done){
+	var newUser = new User({
+		email: email,
+		password: password
+	});
+
+	User.findOne({email: email}, function( err, user){
+		if(err) {return done(err);}	
+
+		if(user)
+			{return done(null, false, {message: 'Acount with that email address already exists'});
+
+		}
+
+		newUser.save(function(err) {
+			done(null, newUser);
+		});
+	});
+});
+
+passport.use('local-register',registerStrategy);
+passport.use('local-login' ,logInStrategy);
+
 
 //jf mongodb
 
@@ -85,32 +112,29 @@ process.on('SIGINT', function() {
 
 
 //jf routes
-app.post('/register', function(req, res){
-	var user = req.body;
-
-	var newUser = new User({
-		email: user.email,
-		password: user.password
-	});
-
-	
-
-	newUser.save(function(err) {
-		createSendToken (newUser, res);
-	});
+app.post('/register', passport.authenticate('local-register'), function(req, res){
+	createSendToken(req.user, res);
 });
 
-app.post('/login', function(req, res, next){
-	passport.authenticate('local', function(err, user){
-		if (err) {next(err);}
-
-		req.login(user, function(err){
-			if (err) {next(err);}
-
-			createSendToken(user, res);
-		});
-	})(req,res,next);
+app.post('/login', passport.authenticate('local-login'), function(req, res, message){
+	createSendToken(req.user, res);
+	console.log('serverside api.js routes /login error message is ' + message);
 });
+
+//
+function createSendToken(user, res) {
+	var payload = {
+		// iss: req.hostname,  //removed in lesson, Login, Login endpoint 5:48
+		sub: user.id
+	};
+
+	var token = jwt.encode(payload, 'shhh..');
+
+	res.status(200).send({
+		user: user.toJSON(),
+		token: token
+	});
+}
 
 var jobs = [
 	'Cook'
@@ -141,20 +165,7 @@ app.get('/jobs', function(req, res) {
 	res.json(jobs);
 });
 
-//
-function createSendToken(user, res) {
-	var payload = {
-		// iss: req.hostname,  //removed in lesson, Login, Login endpoint 5:48
-		sub: user.id
-	};
 
-	var token = jwt.encode(payload, 'shhh..');
-
-	res.status(200).send({
-		user: user.toJSON(),
-		token: token
-	});
-}
 
 // console.log(jwt.encode('hi', 'secret'));
 
